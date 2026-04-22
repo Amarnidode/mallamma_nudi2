@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>About Us - Mallamma Nudi</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+  background: #f5f5f5;
+}
+
+/* Title Strip */
+.title-strip {
+  background: #ddd;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.title-box {
+  background: #3f3a47;
+  color: white;
+  padding: 10px 25px;
+  font-size: 28px;
+  font-weight: 500;
+  position: relative;
+}
+
+.title-box::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 6px;
+  background: #ffc107;
+}
+
+/* Content */
+.about-content {
+  background: white;
+  padding: 30px;
+  margin-top: 20px;
+  border-radius: 8px;
+  line-height: 1.7;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div id="header"></div>
+
+<div class="container">
+
+  <!-- Title -->
+  <div class="title-strip">
+    <div class="title-box">About Us</div>
+  </div>
+
+  <!-- Content -->
+  <div class="about-content">
+
+    <p><strong>Mallamma Nudi</strong> is a digital newspaper platform that provides daily editions in an easy-to-read online format.</p>
+
+    <p>Our mission is to deliver accurate, timely, and relevant news to readers across regions. We focus on local news, community updates, and important events that matter to our audience.</p>
+
+    <p>With our e-paper system, users can browse daily editions, view pages, download PDFs, and clip important news articles easily.</p>
+
+    <p>We are committed to providing a smooth and user-friendly reading experience across all devices.</p>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div id="footer"></div>
+
+<script>
+// Load header/footer
+function loadComponent(id, file) {
+  fetch(file)
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById(id).innerHTML = data;
+    });
+}
+
+loadComponent("header", "header.html");
+loadComponent("footer", "footer.html");
+</script>
+
+</body>
+</html>
