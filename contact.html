@@ -81,12 +81,23 @@ body {
 <script>
 // Load header/footer
 function loadComponent(id, file) {
-  fetch(file)
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById(id).innerHTML = data;
-    });
-}
+      fetch("header.html")
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById("header").innerHTML = html;
+
+          // ✅ FIX HAMBURGER CLICK
+          const toggler = document.querySelector(".navbar-toggler");
+          const menu = document.getElementById("navbarMenu");
+
+          if (toggler && menu) {
+            toggler.addEventListener("click", function () {
+              menu.classList.toggle("show");
+            });
+          }
+        });
+    }
+
 
 loadComponent("header", "header.html");
 loadComponent("footer", "footer.html");

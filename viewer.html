@@ -5,58 +5,45 @@
   <meta charset="UTF-8">
   <title>Mallamma Nudi - Viewer</title>
 
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Flatpickr -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+  <!-- html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
+    /* ================= GLOBAL ================= */
     body {
-      background-color: #f5f5f5;
+      background-color: #c3bdbdd8;
+      margin: 0;
+      font-family: Arial, sans-serif;
     }
 
-    /* TOP BAR */
+    /* ================= TOP BAR ================= */
     .topbar {
       display: flex;
       align-items: center;
       gap: 10px;
       padding: 10px;
       background: #ddd;
+      flex-wrap: wrap;
     }
 
-    /* PAGE BUTTONS */
-    .pages button {
-      padding: 6px 12px;
-      border: none;
-      background: #ccc;
-      margin-right: 5px;
-      cursor: pointer;
-    }
-
-    .pages button.active {
-      background: #333;
-      color: white;
-    }
-
-    /* BUTTON COLORS */
-    .pdf-btn {
-      background: gold;
-    }
-
-    .clip-btn {
-      background: orange;
-    }
-
-    .archive-btn {
-      background: #444;
-      color: white;
-    }
-
-    /* VIEWER */
+    /* ================= VIEWER LAYOUT ================= */
     .viewer-container {
       display: flex;
       margin-top: 10px;
+      gap: 10px;
     }
 
+    /* ================= SIDEBAR ================= */
     .sidebar {
       width: 250px;
       background: #eee;
@@ -69,12 +56,14 @@
       width: 100%;
       cursor: pointer;
       border: 2px solid transparent;
+      margin-bottom: 5px;
     }
 
     .sidebar img.active {
       border: 2px solid black;
     }
 
+    /* ================= MAIN VIEWER ================= */
     .main-viewer {
       flex: 1;
       background: #ddd;
@@ -82,14 +71,16 @@
       justify-content: center;
       align-items: center;
       position: relative;
+      overflow: hidden;
     }
 
     .main-viewer img {
       max-width: 100%;
       max-height: 100%;
+      pointer-events: none;
     }
 
-    /* NAV */
+    /* ================= NAV BUTTONS ================= */
     .nav-btn {
       position: absolute;
       top: 50%;
@@ -100,6 +91,7 @@
       border: none;
       padding: 10px;
       cursor: pointer;
+      z-index: 10;
     }
 
     .nav-left {
@@ -110,52 +102,53 @@
       right: 10px;
     }
 
-    /* CLIP BOX */
+    /* ================= CLIP BOX ================= */
     #clipBox {
       position: absolute;
       border: 2px dashed red;
       background: rgba(255, 0, 0, 0.2);
       display: none;
+      pointer-events: none;
+      z-index: 50;
     }
 
-    /* CALENDAR */
-    #calendarBox {
-      display: none;
-    }
-
-    /* MODAL */
+    /* ================= MODAL ================= */
     #modal {
       display: none;
       position: fixed;
-      z-index: 999;
+      z-index: 99999;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.6);
+
+      justify-content: center;
+      align-items: center;
     }
 
     #modalContent {
       background: #fff;
       width: 420px;
-      margin: 4% auto;
       padding: 15px;
       border-radius: 10px;
       text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
     }
 
     #modalContent img {
       width: 100%;
-      border: 1px solid #ccc;
       margin-top: 10px;
     }
 
+    /* ================= SOCIAL BUTTONS ================= */
     .socials button {
       margin: 3px;
       padding: 8px;
       border: none;
       color: white;
       cursor: pointer;
+      border-radius: 5px;
     }
 
     .fb {
@@ -174,55 +167,152 @@
       background: #e84393;
     }
 
-    .viewer-container {
+    /* ================= CALENDAR ================= */
+    .calendar-popup {
+      position: fixed;
+      top: 80px;
+      right: -320px;
+      width: 280px;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      transition: 0.3s ease;
+      z-index: 1000;
+    }
+
+    .calendar-popup.show {
+      right: 20px;
+    }
+
+    /* ================= PAGINATION ================= */
+    #pageNumbers {
       display: flex;
-      margin-top: 10px;
-      gap: 10px;
-      /* spacing between sidebar & viewer */
+      flex-wrap: nowrap;
+      gap: 2px;
+      overflow-x: auto;
     }
 
-    /* SAME COLOR FOR PDF & CLIP */
-    .pdf-btn,
-    .clip-btn {
-      background-color: #ffc107;
-      /* Bootstrap warning yellow */
-      color: black;
-      border: none;
+    #pageNumbers .page-item {
+      flex: 0 0 auto;
     }
 
-    .pdf-btn:hover,
-    .clip-btn:hover {
-      background-color: #e0a800;
-      color: black;
+    #pageNumbers .page-link {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+
+    /* ================= MOBILE ================= */
+    @media (max-width: 768px) {
+
+      body {
+        overflow-x: hidden;
+      }
+
+      .viewer-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 8px;
+      }
+
+      .sidebar img {
+        display: none;
+      }
+
+      .main-viewer {
+        width: 100%;
+        height: 70vh;
+      }
+
+      .main-viewer img {
+        width: 100%;
+        height: auto;
+      }
+
+      .nav-btn {
+        font-size: 18px;
+        padding: 6px 10px;
+      }
+
+      /* TOPBAR MOBILE */
+      .topbar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        gap: 5px;
+      }
+
+      /* PAGINATION MOBILE */
+      #pageNumbers {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+      }
+
+      #pageNumbers .page-link {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+
+      /* MODAL MOBILE */
+      #modalContent {
+        width: 95%;
+        margin: 10% auto;
+      }
+
+      /* CALENDAR MOBILE */
+      .calendar-popup {
+        width: 90%;
+        right: -100%;
+      }
+
+      .calendar-popup.show {
+        right: 5%;
+      }
     }
   </style>
+
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-
+  <!-- HEADER -->
   <div id="header"></div>
+  <div id="clip"></div>
+
 
   <!-- TOP BAR -->
+  <div class="topbar container mt-1">
+    <select class="form-select w-auto" onchange="goToPage(this.value)" id="pageDropdown"></select>
 
-  <div class="topbar">
-    <div class="container d-flex align-items-center gap-2">
+    <ul class="pagination mb-0" id="pageNumbers"></ul>
 
-      <select class="form-select w-auto" onchange="goToPage(this.value)" id="pageDropdown"></select>
+    <div class="ms-auto">
 
-      <div class="pages" id="pageNumbers"></div>
+      <button class="btn btn-warning me-5" onclick="downloadPDF()">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+      </button>
 
-      <div class="ms-auto">
-        <button class="btn pdf-btn" onclick="downloadPDF()">PDF</button>
-        <button class="btn clip-btn" onclick="startClip()">Clip</button>
-        <button class="btn archive-btn" onclick="openArchive()">Archive</button>
-        <button class="btn btn-secondary" onclick="takeScreenshot()">Screenshot</button>
-      </div>
+      <button class="btn btn-warning" onclick="startClip()">
+        <i class="bi bi-scissors"></i> Clip
+      </button>
+
+      <button class="btn btn-dark" onclick="openArchive()">
+        <i class="bi bi-calendar"></i> Archive
+      </button>
 
     </div>
   </div>
 
   <!-- CALENDAR -->
-  <div class="container mt-2" id="calendarBox">
+  <div id="calendarBox" class="calendar-popup">
     <input type="text" id="calendarInput" class="form-control">
   </div>
 
@@ -245,14 +335,10 @@
     <div id="modalContent">
       <h4>Clip Preview</h4>
       <img id="previewImg">
-
       <input type="text" id="shareLink" class="form-control mt-2" readonly>
 
       <div class="socials mt-2">
-        <button class="fb" onclick="shareFB()">FACEOOB</button>
-        <button class="tw" onclick="shareTwitter()">X</button>
-        <button class="wa" onclick="shareWhatsApp()">WHATSAPP</button>
-        <button class="mail" onclick="shareEmail()">Mail</button>
+        <button class="wa" onclick="shareWhatsApp()">WhatsApp</button>
       </div>
 
       <div class="mt-2">
@@ -263,24 +349,50 @@
     </div>
   </div>
 
+
+  <div id="clipBox"></div>
+  <img id="mainImage">
+  <div id="modal"></div>
+  <!-- FOOTER -->
   <div id="footer"></div>
+
 
   <script>
 
-    // LOAD HEADER FOOTER
     function loadComponent(id, file) {
-      fetch(file)
+      fetch("header.html")
         .then(res => res.text())
-        .then(data => document.getElementById(id).innerHTML = data);
+        .then(html => {
+          document.getElementById("header").innerHTML = html;
+
+          // ✅ FIX HAMBURGER CLICK
+          const toggler = document.querySelector(".navbar-toggler");
+          const menu = document.getElementById("navbarMenu");
+
+          if (toggler && menu) {
+            toggler.addEventListener("click", function () {
+              menu.classList.toggle("show");
+            });
+          }
+        });
     }
+
     loadComponent("header", "header.html");
     loadComponent("footer", "footer.html");
 
-    // DATE
+    const clipParam = new URLSearchParams(window.location.search).get("clip");
+
+    if (clipParam) {
+      const savedImage = localStorage.getItem(clipParam);
+
+      if (savedImage) {
+        document.getElementById("mainImage").src = savedImage;
+      }
+    }
+
     const params = new URLSearchParams(window.location.search);
     const date = params.get("date");
 
-    // VARIABLES
     let images = [];
     let currentPage = 0;
 
@@ -291,36 +403,27 @@
     const pageNumbers = document.getElementById("pageNumbers");
     const dropdown = document.getElementById("pageDropdown");
 
+    // ================= PAGINATION VARIABLES =================
+    let pageGroupStart = 0;
+    const groupSize = 4;
+
     // LOAD IMAGES
     function loadImages(date) {
-      images = [];
-      sidebar.innerHTML = "";
-      dropdown.innerHTML = "";
-
       let page = 1;
 
       function loadNext() {
         let path = `Images/${date}/page${page}.jpg`;
-
         let img = new Image();
         img.src = path;
 
         img.onload = function () {
           images.push(path);
 
-          let div = document.createElement("div");
-
           let thumb = document.createElement("img");
           thumb.src = path;
           thumb.onclick = () => goToPage(images.length - 1);
 
-          let label = document.createElement("div");
-          label.innerText = "Page " + images.length;
-          label.onclick = () => goToPage(images.length - 1);
-
-          div.appendChild(thumb);
-          div.appendChild(label);
-          sidebar.appendChild(div);
+          sidebar.appendChild(thumb);
 
           let option = document.createElement("option");
           option.value = images.length - 1;
@@ -344,7 +447,7 @@
 
     if (date) loadImages(date);
 
-    // PAGE SWITCH
+    // ================= PAGE =================
     function goToPage(i) {
       currentPage = i;
       mainImage.src = images[i];
@@ -354,40 +457,107 @@
       });
 
       dropdown.value = i;
-      renderPageNumbers();
+
+      renderPageNumbers(); // important
     }
 
-    // PAGE BUTTONS
+    // ================= PAGINATION =================
     function renderPageNumbers() {
       pageNumbers.innerHTML = "";
-      images.forEach((_, i) => {
-        let btn = document.createElement("button");
-        btn.innerText = i + 1;
-        if (i === currentPage) btn.classList.add("active");
-        btn.onclick = () => goToPage(i);
-        pageNumbers.appendChild(btn);
-      });
+
+      // FIRST
+      let first = document.createElement("li");
+      first.className = "page-item";
+      first.innerHTML = `<a class="page-link" href="#">First</a>`;
+      first.onclick = () => {
+        pageGroupStart = 0;
+        goToPage(0);
+      };
+      pageNumbers.appendChild(first);
+
+      // PREVIOUS «
+      let prev = document.createElement("li");
+      prev.className = "page-item";
+      prev.innerHTML = `<a class="page-link" href="#">«</a>`;
+      prev.onclick = () => {
+        if (pageGroupStart > 0) {
+          pageGroupStart -= groupSize;
+          renderPageNumbers();
+        }
+      };
+      pageNumbers.appendChild(prev);
+
+      // PAGE NUMBERS (4 only)
+      for (let i = pageGroupStart; i < pageGroupStart + groupSize && i < images.length; i++) {
+        let li = document.createElement("li");
+        li.className = "page-item " + (i === currentPage ? "active" : "");
+
+        li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
+        li.onclick = () => goToPage(i);
+
+        pageNumbers.appendChild(li);
+      }
+
+      // NEXT »
+      let next = document.createElement("li");
+      next.className = "page-item";
+      next.innerHTML = `<a class="page-link" href="#">»</a>`;
+      next.onclick = () => {
+        if (pageGroupStart + groupSize < images.length) {
+          pageGroupStart += groupSize;
+          renderPageNumbers();
+        }
+      };
+      pageNumbers.appendChild(next);
+
+      // LAST
+      let last = document.createElement("li");
+      last.className = "page-item";
+      last.innerHTML = `<a class="page-link" href="#">Last</a>`;
+      last.onclick = () => {
+        pageGroupStart = Math.floor((images.length - 1) / groupSize) * groupSize;
+        goToPage(images.length - 1);
+      };
+      pageNumbers.appendChild(last);
     }
 
-    // NAV
-    function nextPage() { if (currentPage < images.length - 1) goToPage(currentPage + 1); }
-    function prevPage() { if (currentPage > 0) goToPage(currentPage - 1); }
+    // ================= NAV =================
+    function nextPage() {
+      if (currentPage < images.length - 1) {
+        goToPage(currentPage + 1);
+      }
+    }
 
-    // PDF
+    function prevPage() {
+      if (currentPage > 0) {
+        goToPage(currentPage - 1);
+      }
+    }
+
+    // ================= PDF =================
     function downloadPDF() {
       window.open(`pdfs/${date}.pdf`);
     }
 
-    // ARCHIVE
+    // ================= ARCHIVE =================
     function openArchive() {
-      window.open(
-        "calender.html",
-        "Calendar",
-        "width=400,height=450,top=150,left=500"
-      );
+      document.getElementById("calendarBox").classList.toggle("show");
     }
 
-    // CALENDAR
+    document.addEventListener("click", function (event) {
+      const calendarBox = document.getElementById("calendarBox");
+      const archiveBtn = document.querySelector(".bi-calendar").closest("button");
+
+      const isClickInsideCalendar = calendarBox.contains(event.target);
+      const isClickArchiveButton = archiveBtn.contains(event.target);
+
+      // If clicked outside both → close
+      if (!isClickInsideCalendar && !isClickArchiveButton) {
+        calendarBox.classList.remove("show");
+      }
+    });
+
+    // ================= CALENDAR =================
     flatpickr("#calendarInput", {
       inline: true,
       onChange: function (selectedDates) {
@@ -395,93 +565,199 @@
         let formatted =
           String(d.getDate()).padStart(2, '0') + '-' +
           String(d.getMonth() + 1).padStart(2, '0') + '-' +
-          String(d.getFullYear()).slice(-2);
+          d.getFullYear();
 
-        window.location.href = `viewer.html?date=${formatted}`;
+        window.location.href = `?date=${formatted}`;
       }
     });
 
-    // SCREENSHOT
-    function takeScreenshot() {
-      html2canvas(mainViewer).then(canvas => {
-        let link = document.createElement("a");
-        link.download = "paper.png";
-        link.href = canvas.toDataURL();
-        link.click();
-      });
-    }
+    let clipping = false;
+    let startX = 0, startY = 0, endX = 0, endY = 0;
+    let capturedImage = "";
 
-    // CLIP TOOL
-    let clipping = false, sx, sy, ex, ey, capturedImage;
+    const viewer = document.getElementById("mainViewer");
+    const img = document.getElementById("mainImage");
+    const box = document.getElementById("clipBox");
 
+    // ================= START CLIP =================
     function startClip() {
+      if (!img.complete) {
+        alert("Image still loading...");
+        return;
+      }
+
       clipping = true;
-      mainViewer.style.cursor = "crosshair";
+      viewer.style.cursor = "crosshair";
+      box.style.display = "none";
     }
 
-    mainViewer.addEventListener("mousedown", e => {
+    // ================= COMMON CAPTURE FUNCTION =================
+    function captureClip() {
       if (!clipping) return;
-      let r = mainViewer.getBoundingClientRect();
-      sx = e.clientX - r.left; sy = e.clientY - r.top;
-      clipBox.style.display = "block";
-    });
 
-    mainViewer.addEventListener("mousemove", e => {
-      if (!clipping) return;
-      let r = mainViewer.getBoundingClientRect();
-      ex = e.clientX - r.left; ey = e.clientY - r.top;
-
-      clipBox.style.width = Math.abs(ex - sx) + "px";
-      clipBox.style.height = Math.abs(ey - sy) + "px";
-      clipBox.style.left = Math.min(sx, ex) + "px";
-      clipBox.style.top = Math.min(sy, ey) + "px";
-    });
-
-    mainViewer.addEventListener("mouseup", async () => {
-      if (!clipping) return;
       clipping = false;
-      mainViewer.style.cursor = "default";
+      viewer.style.cursor = "default";
 
-      const canvas = await html2canvas(mainViewer);
+      const rect = img.getBoundingClientRect();
 
-      let x = Math.min(sx, ex), y = Math.min(sy, ey);
-      let w = Math.abs(ex - sx), h = Math.abs(ey - sy);
+      const scaleX = img.naturalWidth / rect.width;
+      const scaleY = img.naturalHeight / rect.height;
 
-      const crop = document.createElement("canvas");
-      crop.width = w; crop.height = h;
+      const x = Math.min(startX, endX) * scaleX;
+      const y = Math.min(startY, endY) * scaleY;
+      const w = Math.abs(endX - startX) * scaleX;
+      const h = Math.abs(endY - startY) * scaleY;
 
-      crop.getContext("2d").drawImage(canvas, x, y, w, h, 0, 0, w, h);
-      capturedImage = crop.toDataURL();
+      if (w < 10 || h < 10) {
+        box.style.display = "none";
+        return;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
+
+      capturedImage = canvas.toDataURL("image/png");
 
       document.getElementById("previewImg").src = capturedImage;
-      document.getElementById("shareLink").value = "Generated Clip";
-      document.getElementById("modal").style.display = "block";
 
-      clipBox.style.display = "none";
+      const modal = document.getElementById("modal");
+      modal.style.display = "flex";
+      modal.style.alignItems = "center";
+      modal.style.justifyContent = "center";
+
+      box.style.display = "none";
+    }
+
+    // ================= DESKTOP MOUSE =================
+    viewer.addEventListener("mousedown", (e) => {
+      if (!clipping) return;
+
+      const rect = img.getBoundingClientRect();
+
+      startX = e.clientX - rect.left;
+      startY = e.clientY - rect.top;
+
+      box.style.display = "block";
     });
 
-    // MODAL FUNCTIONS
-    function closeModal() { document.getElementById("modal").style.display = "none"; }
+    viewer.addEventListener("mousemove", (e) => {
+      if (!clipping) return;
 
+      const rect = img.getBoundingClientRect();
+
+      endX = e.clientX - rect.left;
+      endY = e.clientY - rect.top;
+
+      box.style.left = Math.min(startX, endX) + "px";
+      box.style.top = Math.min(startY, endY) + "px";
+      box.style.width = Math.abs(endX - startX) + "px";
+      box.style.height = Math.abs(endY - startY) + "px";
+    });
+
+    document.addEventListener("mouseup", captureClip);
+
+    // ================= MOBILE TOUCH =================
+    viewer.addEventListener("touchstart", (e) => {
+      if (!clipping) return;
+
+      const rect = img.getBoundingClientRect();
+      const touch = e.touches[0];
+
+      startX = touch.clientX - rect.left;
+      startY = touch.clientY - rect.top;
+
+      box.style.display = "block";
+    });
+
+    viewer.addEventListener("touchmove", (e) => {
+      if (!clipping) return;
+
+      const rect = img.getBoundingClientRect();
+      const touch = e.touches[0];
+
+      endX = touch.clientX - rect.left;
+      endY = touch.clientY - rect.top;
+
+      box.style.left = Math.min(startX, endX) + "px";
+      box.style.top = Math.min(startY, endY) + "px";
+      box.style.width = Math.abs(endX - startX) + "px";
+      box.style.height = Math.abs(endY - startY) + "px";
+
+      e.preventDefault(); // stop scroll while selecting
+    }, { passive: false });
+
+    viewer.addEventListener("touchend", captureClip);
+
+
+    // ================= MODAL ACTIONS FIX =================
+
+    // OPEN IMAGE (new tab)
     function openImage() {
-      let w = window.open();
-      w.document.write(`<img src="${capturedImage}" style="width:100%">`);
+      if (!capturedImage) return;
+
+      const win = window.open();
+      win.document.write(`
+    <title>Clip Preview</title>
+    <img src="${capturedImage}" style="width:100%;height:auto;">
+  `);
     }
 
+    // DOWNLOAD IMAGE
     function downloadImage() {
-      let a = document.createElement("a");
+      if (!capturedImage) return;
+
+      const a = document.createElement("a");
       a.href = capturedImage;
       a.download = "clip.png";
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
     }
 
-    // SHARE
-    function shareWhatsApp() { window.open(`https://wa.me/?text=Check this clip`); }
-    function shareFB() { window.open(`https://facebook.com/sharer/sharer.php`); }
-    function shareTwitter() { window.open(`https://twitter.com/intent/tweet`); }
-    function shareEmail() { window.location.href = `mailto:?subject=Clip`; }
+    // CLOSE MODAL (return to same page state)
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
 
+      // optional cleanup (prevents stuck overlay issues)
+      document.getElementById("previewImg").src = "";
+    }
+    // ================= SHARE FIX =================
+    function shareWhatsApp() {
+      if (!capturedImage) return alert("No image");
+
+      fetch(capturedImage)
+        .then(res => res.blob())
+        .then(blob => {
+          const file = new File([blob], "clip.png", { type: "image/png" });
+
+          if (navigator.share && navigator.canShare({ files: [file] })) {
+            navigator.share({
+              files: [file],
+              title: "Mallamma Nudi Clip"
+            });
+          } else {
+            window.open(`https://wa.me/?text=Check this clip`);
+          }
+        });
+    }
+
+    function shareFB() {
+      window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(location.href));
+    }
+
+    function shareTwitter() {
+      window.open("https://twitter.com/intent/tweet?url=" + encodeURIComponent(location.href));
+    }
+
+    function shareEmail() {
+      window.location.href = "mailto:?subject=Clip&body=Check this clip";
+    }
   </script>
+
 </body>
 
 </html>

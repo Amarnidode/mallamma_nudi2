@@ -1,0 +1,32 @@
+@media (max-width: 991px) {
+  #navbarMenu {
+    background: white;
+    margin-top: 10px;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    text-align: left; /* LEFT ALIGN */
+  }
+
+  .nav-link {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+  }
+
+  .nav-link:last-child {
+    border-bottom: none;
+  }
+}
+
+  .nav-link:last-child {
+    border-bottom: none;
+  }
+
+.navbar-toggler {
+  border: none;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}
