@@ -80,6 +80,68 @@
       pointer-events: none;
     }
 
+
+    /* ================= MOBILE RESPONSIVE ================= */
+    @media (max-width: 768px) {
+
+      body {
+        overflow-x: hidden;
+      }
+
+      /* STACK LAYOUT */
+      .viewer-container {
+        flex-direction: column;
+      }
+
+      /* SIDEBAR → TOP HORIZONTAL SCROLL */
+      .sidebar {
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        padding: 8px;
+        background: #f5f5f5;
+      }
+
+      .sidebar img {
+        width: 80px;
+        height: auto;
+        flex-shrink: 0;
+        border-radius: 4px;
+      }
+
+      /* MAIN VIEWER FULL WIDTH */
+      .main-viewer {
+        width: 100%;
+        height: auto;
+        min-height: 60vh;
+        background: #ccc;
+      }
+
+      .main-viewer img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
+
+      /* NAV BUTTONS SMALLER */
+      .nav-btn {
+        font-size: 22px;
+        padding: 6px;
+      }
+
+      .nav-left {
+        left: 5px;
+      }
+
+      .nav-right {
+        right: 5px;
+      }
+    }
+
     /* ================= NAV BUTTONS ================= */
     .nav-btn {
       position: absolute;
@@ -353,6 +415,7 @@
   <div id="clipBox"></div>
   <img id="mainImage">
   <div id="modal"></div>
+
   <!-- FOOTER -->
   <div id="footer"></div>
 
@@ -360,24 +423,36 @@
   <script>
 
     function loadComponent(id, file) {
-      fetch("header.html")
+      fetch(file)
         .then(res => res.text())
         .then(html => {
-          document.getElementById("header").innerHTML = html;
+          document.getElementById(id).innerHTML = html;
 
-          // ✅ FIX HAMBURGER CLICK
-          const toggler = document.querySelector(".navbar-toggler");
-          const menu = document.getElementById("navbarMenu");
+          // ✅ Apply hamburger fix ONLY for header
+          if (id === "header") {
+            const toggler = document.querySelector(".navbar-toggler");
+            const menu = document.getElementById("navbarMenu");
 
-          if (toggler && menu) {
-            toggler.addEventListener("click", function () {
-              menu.classList.toggle("show");
-            });
+            if (toggler && menu) {
+              toggler.addEventListener("click", function () {
+                menu.classList.toggle("show");
+              });
+            }
           }
         });
     }
 
+    // Load components
+    function loadComponent(id, file) {
+      fetch(file)
+        .then(res => res.text())
+        .then(data => {
+          document.getElementById(id).innerHTML = data;
+        });
+    }
+
     loadComponent("header", "header.html");
+    loadComponent("footer", "footer.html");
     loadComponent("footer", "footer.html");
 
     const clipParam = new URLSearchParams(window.location.search).get("clip");
